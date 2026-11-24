@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Port - Traffic & Dev Port Killer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-badge">⚡</div>
+        <div class="header-title">
+          <h1>SUPER PORT</h1>
+          <span class="subtitle">Dev Port Killer &amp; Traffic Inspector for Windows</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="btnKillAllDev" class="btn btn-danger-glow" title="Terminate all running dev servers at once">
+          <span class="icon">💥</span> Kill All Dev Ports
+        </button>
+        <button id="btnRefresh" class="btn btn-secondary" title="Scan Ports Now">
+          <span class="icon refresh-icon">🔄</span> Scan Now
+        </button>
+      </div>
+    </header>
+
+    <!-- Metrics Overview -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon dev-icon">⚡</div>
+        <div class="metric-content">
+          <span class="metric-label">Active Dev Servers</span>
+          <span class="metric-value" id="valDevServers">0</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon ram-icon">💾</div>
+        <div class="metric-content">
+          <span class="metric-label">Dev RAM Consumed</span>
+          <span class="metric-value" id="valDevRam">0 MB</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon conn-icon">📡</div>
+        <div class="metric-content">
+          <span class="metric-label">Active Connections</span>
+          <span class="metric-value" id="valConnections">0</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon total-icon">🌐</div>
+        <div class="metric-content">
+          <span class="metric-label">Total Listening Ports</span>
+          <span class="metric-value" id="valTotalPorts">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls & Filters Toolbar -->
+    <section class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by port (:3000), framework, process, PID..." />
+        <button id="btnClearSearch" class="btn-clear hidden">✕</button>
+      </div>
+
+      <div class="filter-pills">
+        <button class="filter-pill active" data-filter="dev">⚡ Dev Servers</button>
+        <button class="filter-pill" data-filter="all">🌐 All Ports</button>
+        <button class="filter-pill" data-filter="database">🗄️ Databases</button>
+        <button class="filter-pill" data-filter="docker">🐳 Docker</button>
+      </div>
+
+      <div class="auto-refresh-selector">
+        <label for="selectRefresh">Auto-Refresh:</label>
+        <select id="selectRefresh">
+          <option value="1000">1s (Ultra)</option>
+          <option value="3000" selected>3s (Default)</option>
+          <option value="5000">5s (Relaxed)</option>
+          <option value="0">Paused</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Main Ports Content -->
+    <main class="ports-container">
+      <div id="portsList" class="ports-grid">
+        <!-- Rendered dynamically -->
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Scanning active Windows ports &amp; dev servers...</p>
+        </div>
+      </div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">🔌</div>
+        <h3>No matching ports found</h3>
+        <p>No active listening ports match your current filter or search criteria.</p>
+      </div>
+    </main>
+
+    <!-- Traffic Inspector Modal -->
+    <div id="trafficModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span class="modal-badge">📡</span>
+            <h2 id="modalPortTitle">Traffic Inspector: Port 3000</h2>
+          </div>
+          <button id="btnCloseModal" class="btn-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-summary-bar">
+            <div class="modal-stat">
+              <span class="modal-stat-label">Process:</span>
+              <span id="modalProcess" class="modal-stat-value">node.exe (PID 14208)</span>
+            </div>
+            <div class="modal-stat">
+              <span class="modal-stat-label">Total Connections:</span>
+              <span id="modalTotalConns" class="modal-stat-value">0</span>
+            </div>
+            <div class="modal-stat">
+              <span class="modal-stat-label">Established:</span>
+              <span id="modalEstablished" class="modal-stat-value text-success">0</span>
+            </div>
+            <div class="modal-stat">
+              <span class="modal-stat-label">Unique Clients:</span>
+              <span id="modalUniqueClients" class="modal-stat-value">0</span>
+            </div>
+          </div>
+
+          <div class="connections-table-wrapper">
+            <table class="connections-table">
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Local Endpoint</th>
+                  <th>Remote Endpoint (Client)</th>
+                  <th>PID</th>
+                </tr>
+              </thead>
+              <tbody id="connectionsTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btnModalKill" class="btn btn-danger">
+            <span class="icon">⚡</span> Kill This Server
+          </button>
+          <button id="btnModalClose" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

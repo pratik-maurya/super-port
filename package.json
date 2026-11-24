@@ -1,0 +1,207 @@
+{
+  "name": "super-port",
+  "displayName": "Super Port",
+  "description": "Dev Port Killer & Traffic Inspector - Instant 1-click port killer, server restarter & live dev server traffic inspector for Windows & VS Code.",
+  "version": "1.0.0",
+  "author": "pratik-maurya",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pratik-maurya/super-port.git"
+  },
+  "homepage": "https://github.com/pratik-maurya/super-port#readme",
+  "bugs": {
+    "url": "https://github.com/pratik-maurya/super-port/issues"
+  },
+  "publisher": "super-port",
+  "icon": "resources/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Developer Tools",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "port killer",
+    "eaddrinuse",
+    "dev server",
+    "vite",
+    "nextjs",
+    "kill port",
+    "taskkill",
+    "traffic inspector",
+    "netstat"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension/extension.js",
+  "bin": {
+    "super-port": "./bin/super-port.js"
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "super-port-container",
+          "title": "Super Port",
+          "icon": "resources/activity-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "super-port-container": [
+        {
+          "id": "superPortExplorer",
+          "name": "Active Dev Ports & Servers"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "super-port.showDashboard",
+        "title": "Open Traffic & Port Inspector",
+        "category": "Super Port",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "super-port.refresh",
+        "title": "Refresh Active Ports",
+        "category": "Super Port",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "super-port.quickKill",
+        "title": "⚡ Quick Kill Port...",
+        "category": "Super Port",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "super-port.killPort",
+        "title": "Kill Port Process",
+        "category": "Super Port",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "super-port.killAllDevPorts",
+        "title": "💥 Kill All Active Dev Ports",
+        "category": "Super Port",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "super-port.restartPort",
+        "title": "🔄 Restart Dev Server",
+        "category": "Super Port",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "super-port.openBrowser",
+        "title": "Open in Browser",
+        "category": "Super Port",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "super-port.copyUrl",
+        "title": "Copy URL",
+        "category": "Super Port",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "super-port.inspectTraffic",
+        "title": "Inspect Port Traffic & Connections",
+        "category": "Super Port",
+        "icon": "$(radio-tower)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "super-port.refresh",
+          "when": "view == superPortExplorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "super-port.showDashboard",
+          "when": "view == superPortExplorer",
+          "group": "navigation@2"
+        },
+        {
+          "command": "super-port.killAllDevPorts",
+          "when": "view == superPortExplorer",
+          "group": "navigation@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "super-port.killPort",
+          "when": "view == superPortExplorer && viewItem == portItem",
+          "group": "inline@1"
+        },
+        {
+          "command": "super-port.restartPort",
+          "when": "view == superPortExplorer && viewItem == portItem",
+          "group": "inline@2"
+        },
+        {
+          "command": "super-port.openBrowser",
+          "when": "view == superPortExplorer && viewItem == portItem",
+          "group": "inline@3"
+        },
+        {
+          "command": "super-port.inspectTraffic",
+          "when": "view == superPortExplorer && viewItem == portItem",
+          "group": "inline@4"
+        },
+        {
+          "command": "super-port.copyUrl",
+          "when": "view == superPortExplorer && viewItem == portItem",
+          "group": "0_actions@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Super Port",
+      "properties": {
+        "superPort.autoRefreshInterval": {
+          "type": "number",
+          "default": 3,
+          "description": "Auto refresh interval in seconds (0 to disable auto refresh)."
+        },
+        "superPort.alertOnEADDRINUSE": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect 'listen EADDRINUSE' terminal errors and show a 1-click notification to kill the ghost process."
+        },
+        "superPort.showSystemPorts": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include lower system ports (< 1024) in the explorer view."
+        },
+        "superPort.customDevPorts": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "default": [3000, 3001, 3002, 4200, 5000, 5173, 5174, 8000, 8080, 8081, 8888, 9000],
+          "description": "List of standard development ports highlighted in views."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build": "tsc -p ./ && node scripts/copy-assets.js",
+    "test": "tsc -p ./ && node out/test/runTest.js",
+    "cli": "node bin/super-port.js",
+    "tray": "node bin/super-port.js tray"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.3"
+  }
+}
